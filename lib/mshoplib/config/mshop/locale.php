@@ -282,17 +282,17 @@ return array(
 			'search' => array(
 				'ansi' => '
 					SELECT :columns
-						mloc."id" AS "locale.id", mloc."siteid" AS "locale.siteid",
-						mloc."langid" AS "locale.languageid", mloc."currencyid" AS "locale.currencyid",
-						mloc."pos" AS "locale.position", mloc."status" AS "locale.status",
-						mloc."mtime" AS "locale.mtime", mloc."editor" AS "locale.editor",
-						mloc."ctime" AS "locale.ctime"
+						MIN(mloc."id") AS "locale.id", MIN(mloc."siteid") AS "locale.siteid",
+						MIN(mloc."langid") AS "locale.languageid", MIN(mloc."currencyid") AS "locale.currencyid",
+						MIN(mloc."pos") AS "locale.position", MIN(mloc."status") AS "locale.status",
+						MIN(mloc."mtime") AS "locale.mtime", MIN(mloc."editor") AS "locale.editor",
+						MIN(mloc."ctime") AS "locale.ctime"
 					FROM "mshop_locale" AS mloc
 					LEFT JOIN "mshop_locale_site" AS mlocsi ON (mloc."siteid" = mlocsi."siteid")
 					LEFT JOIN "mshop_locale_language" AS mlocla ON (mloc."langid" = mlocla."id")
 					LEFT JOIN "mshop_locale_currency" AS mloccu ON (mloc."currencyid" = mloccu."id")
 					WHERE :cond
-					GROUP BY :group mloc."id"
+					GROUP BY :columns :group mloc."id"
 					ORDER BY :order
 					OFFSET :start ROWS FETCH NEXT :size ROWS ONLY
 				',
