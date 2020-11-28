@@ -10,7 +10,6 @@ jobs:
       - image: circleci/php:7.1
     steps:
       - checkout
-      - run: sudo apt-get update && sudo apt-get install php7.1-gd
       - restore_cache:
           keys:
             - php71-{{ checksum "composer.json" }}
@@ -21,7 +20,7 @@ jobs:
       - run: ./vendor/bin/phing setup test
   "php-7.2":
     docker:
-      - image: circleci/php:7.2
+      - image: cimg/php:7.2
     steps:
       - run: sudo apt-get update && sudo apt-get install -y php7.2-gd php7.2-intl
       - checkout
@@ -36,7 +35,7 @@ jobs:
       - run: ./vendor/bin/phing setup test
   "php-7.3":
     docker:
-      - image: circleci/php:7.3
+      - image: cimg/php:7.3
     steps:
       - run: sudo apt-get update && sudo apt-get install -y php7.3-gd php7.3-intl php7.3-fileinfo php7.3-pcre
       - checkout
@@ -51,7 +50,7 @@ jobs:
       - run: ./vendor/bin/phing setup test
   "php-7.4":
     docker:
-      - image: circleci/php:7.4
+      - image: cimg/php:7.4
     steps:
       - run: sudo apt-get update && sudo apt-get install -y php7.4-gd php7.4-intl php7.4-fileinfo php7.4-pcre php7.4-pdo-mysql php7.4-xdebug
       - checkout
