@@ -9,6 +9,7 @@ jobs:
     docker:
       - image: circleci/php:7.1
     steps:
+      - run: sudo docker-php-ext-install gd
       - checkout
       - restore_cache:
           keys:
@@ -22,9 +23,8 @@ jobs:
     docker:
       - image: cimg/php:7.2
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y php7.2-gd php7.2-intl
+      - run: sudo apt-get update && sudo apt-get install -y php7.2-gd php7.2-intl php7.2-mysql
       - checkout
-      - run: sudo -E docker-php-ext-install gd
       - restore_cache:
           keys:
             - php72-{{ checksum "composer.json" }}
@@ -37,7 +37,7 @@ jobs:
     docker:
       - image: cimg/php:7.3
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y php7.3-gd php7.3-intl php7.3-fileinfo php7.3-pcre
+      - run: sudo apt-get update && sudo apt-get install -y php7.3-gd php7.3-intl php7.3-mysql
       - checkout
       - run: sudo -E docker-php-ext-install gd
       - restore_cache:
@@ -52,7 +52,7 @@ jobs:
     docker:
       - image: cimg/php:7.4
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y php7.4-gd php7.4-intl php7.4-fileinfo php7.4-pcre php7.4-pdo-mysql php7.4-xdebug
+      - run: sudo apt-get update && sudo apt-get install -y php7.4-gd php7.4-intl php7.4-mysql php7.4-xdebug
       - checkout
       - restore_cache:
           keys:
