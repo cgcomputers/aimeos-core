@@ -10,6 +10,7 @@ jobs:
       - image: circleci/php:7.1
     steps:
       - checkout
+      - run: sudo -E docker-php-ext-install gd
       - restore_cache:
           keys:
             - php71-{{ checksum "composer.json" }}
@@ -23,6 +24,7 @@ jobs:
       - image: circleci/php:7.2
     steps:
       - checkout
+      - run: sudo -E docker-php-ext-install gd
       - restore_cache:
           keys:
             - php72-{{ checksum "composer.json" }}
@@ -36,6 +38,7 @@ jobs:
       - image: circleci/php:7.3
     steps:
       - checkout
+      - run: sudo -E docker-php-ext-install gd
       - restore_cache:
           keys:
             - php73-{{ checksum "composer.json" }}
@@ -49,6 +52,7 @@ jobs:
       - image: circleci/php:7.4
     steps:
       - checkout
+      - run: sudo -E docker-php-ext-install gd
       - restore_cache:
           keys:
             - php74-{{ checksum "composer.json" }}
