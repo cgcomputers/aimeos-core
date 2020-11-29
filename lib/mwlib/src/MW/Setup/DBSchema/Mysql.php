@@ -219,6 +219,6 @@ class Mysql extends \Aimeos\MW\Setup\DBSchema\InformationSchema
 		$default = is_string( $record['COLUMN_DEFAULT'] ) ? trim( $record['COLUMN_DEFAULT'], '\'' ) : $record['COLUMN_DEFAULT'];
 
 		return new \Aimeos\MW\Setup\DBSchema\Column\Item( $record['TABLE_NAME'], $record['COLUMN_NAME'], $type, $length,
-			$default, $record['IS_NULLABLE'], $record['CHARACTER_SET_NAME'], $record['COLLATION_NAME'] );
+			$default !== 'NULL' ? $default : null, $record['IS_NULLABLE'], $record['CHARACTER_SET_NAME'], $record['COLLATION_NAME'] );
 	}
 }
