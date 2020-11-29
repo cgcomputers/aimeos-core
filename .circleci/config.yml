@@ -154,12 +154,11 @@ jobs:
       - run: cat /etc/php/7.4/mods-available/*
       - run: cat /etc/php/7.4/cli/php.ini
       - run: echo -e "; priority=20\nextension=pdo_sqlsrv" | sudo tee /etc/php/7.4/mods-available/pdo_sqlsrv.ini
-#      - run: echo -e "\nextension=pdo_sqlsrv" | sudo tee /etc/php/7.4/cli/php.ini
+      - run: echo -e "\nextension=pdo\nextension=pdo_sqlsrv" | sudo tee /etc/php/7.4/cli/php.ini
       - run: ls -la /etc/php/7.4/mods-available
+      - cat: ls -la /etc/php/7.4/mods-available/*
       - run: cat /etc/php/7.4/cli/php.ini
       - run: php -m
-      - run: ls -la /usr/lib/php/7.4/
-      - run: ls -la /etc/php/7.4/mods-available
 #      - checkout
 #      - restore_cache:
 #          keys:
