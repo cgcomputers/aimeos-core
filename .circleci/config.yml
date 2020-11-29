@@ -9,8 +9,11 @@ jobs:
     docker:
       - image: circleci/php:7.1
     steps:
+      - run: sudo apt install -y libpng-dev
       - run: sudo docker-php-ext-install gd
       - checkout
+      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php71-{{ checksum "composer.json" }}
@@ -25,6 +28,8 @@ jobs:
     steps:
       - run: sudo apt-get update && sudo apt-get install -y php7.2-gd php7.2-intl php7.2-mysql
       - checkout
+      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php72-{{ checksum "composer.json" }}
@@ -39,7 +44,8 @@ jobs:
     steps:
       - run: sudo apt-get update && sudo apt-get install -y php7.3-gd php7.3-intl php7.3-mysql
       - checkout
-      - run: sudo -E docker-php-ext-install gd
+      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php73-{{ checksum "composer.json" }}
@@ -54,6 +60,8 @@ jobs:
     steps:
       - run: sudo apt-get update && sudo apt-get install -y php7.4-gd php7.4-intl php7.4-mysql php7.4-xdebug
       - checkout
+      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php74-{{ checksum "composer.json" }}
