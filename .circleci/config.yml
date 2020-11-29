@@ -46,7 +46,7 @@ jobs:
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup test
       
-  "php-7.3 / mysql-5.7 / check":
+  "php-7.3 / mysql-5.7":
     docker:
       - image: cimg/php:7.3
       - image: circleci/mysql:5.7
@@ -67,9 +67,9 @@ jobs:
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
-      - run: ./vendor/bin/phing setup test check
+      - run: ./vendor/bin/phing setup test
       
-  "php-7.4 / mysql-8.0 / coverage":
+  "php-7.4 / mysql-8.0 / coverage / check":
     docker:
       - image: cimg/php:7.4
       - image: circleci/mysql:8.0
@@ -90,7 +90,7 @@ jobs:
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
-      - run: ./vendor/bin/phing setup coverage
+      - run: ./vendor/bin/phing setup coverage check
       - run: ./vendor/bin/php-coveralls -vvv
 
   "php-7.4 / pgsql-9.6":
@@ -138,13 +138,37 @@ jobs:
       - run: ./vendor/bin/phing setup coverage check
       - run: ./vendor/bin/php-coveralls -vvv
 
+  "php-7.4 / mssql-2017":
+    docker:
+      - image: cimg/php:7.4
+    steps:
+      - run: curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+      - run: curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee -a /etc/apt/sources.list
+      - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev php7.4-gd php7.4-intl
+      - run: pecl install sqlsrv && pecl install pdo_sqlsrv
+      - checkout
+      - restore_cache:
+          keys:
+            - php74-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php74-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: echo "CREATE DATABASE aimeos;" > sqlserver.sql
+      - run: sudo docker run --name=mssql-server -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=S3c0r3P4ss' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 1433 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mssql', 'host' => '127.0.0.1', 'port' => 1433, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'S3c0r3P4ss', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array() ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
+      - run: ./vendor/bin/phing setup coverage check
+      - run: ./vendor/bin/php-coveralls -vvv
+
 workflows:
   version: 2
   unittest:
     jobs:
 #      - "php-7.1 / mysql-5.7"
 #      - "php-7.2 / mysql-5.7"
-#      - "php-7.3 / mysql-5.7 / check"
-#      - "php-7.4 / mysql-8.0 / coverage"
+#      - "php-7.3 / mysql-5.7"
+#      - "php-7.4 / mysql-8.0 / coverage / check"
 #      - "php-7.4 / pgsql-9.6"
-      - "php-7.4 / pgsql-13"
+#      - "php-7.4 / pgsql-13"
+      - "php-7.4 / mssql-2017"
