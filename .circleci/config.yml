@@ -150,8 +150,10 @@ jobs:
       - run: curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee -a /etc/apt/sources.list
       - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y mssql-tools msodbcsql17 unixodbc unixodbc-dev odbcinst1debian2 libodbc1 php7.4-gd php7.4-intl
       - run: sudo pecl channel-update pecl.php.net && sudo pecl install sqlsrv && sudo pecl install pdo_sqlsrv
+      - run: ls -la /usr/lib/php/20190902/
+      - run: ls -la /usr/lib/php/
       - run: ls -la /etc/php/7.4/mods-available
-      - run: echo -e "extension=pdo_sqlsrv.so" | sudo tee /etc/php/7.4/mods-available/sqlsrv.ini
+      - run: echo -e "extension=pdo_sqlsrv.so" | sudo tee /etc/php/7.4/mods-available/pdo_sqlsrv.ini
       - run: ls -la /etc/php/7.4/mods-available
       - run: cat /etc/php/7.4/mods-available/*
 #      - checkout
