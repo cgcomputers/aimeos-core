@@ -144,7 +144,7 @@ jobs:
     steps:
       - run: curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
       - run: curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee -a /etc/apt/sources.list
-      - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev php7.4-gd php7.4-intl
+      - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc unixodbc-dev php7.4-gd php7.4-intl
       - run: pecl install sqlsrv && pecl install pdo_sqlsrv
       - checkout
       - restore_cache:
