@@ -152,6 +152,8 @@ jobs:
       - run: sudo pecl channel-update pecl.php.net && sudo pecl install sqlsrv && sudo pecl install pdo_sqlsrv
       - run: ls -la /etc/php/7.4/mods-available
       - run: echo -e "extension=pdo_sqlsrv.so" | sudo tee /etc/php/7.4/mods-available/sqlsrv.ini
+      - run: ls -la /etc/php/7.4/mods-available
+      - run: cat /etc/php/7.4/mods-available/*
 #      - checkout
 #      - restore_cache:
 #          keys:
