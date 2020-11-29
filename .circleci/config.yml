@@ -117,7 +117,7 @@ jobs:
   "php-7.4 / pgsql-13":
     docker:
       - image: cimg/php:7.4
-      - image: circleci/postgres:13-alpine
+      - image: circleci/postgres:13
         environment:
           POSTGRES_USER: aimeos
           POSTGRES_DB: aimeos
