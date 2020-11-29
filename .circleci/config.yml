@@ -5,15 +5,10 @@
 version: 2
 
 jobs:
-  "php-7.1 / mysql-5.7":
+  "php-7.1 / mariadb-10":
     docker:
       - image: circleci/php:7.1
       - image: circleci/mariadb:10
-        environment:
-          MYSQL_ROOT_PASSWORD: rootpw
-          MYSQL_DATABASE: aimeos
-          MYSQL_USER: aimeos
-          MYSQL_PASSWORD: aimeos
     steps:
       - run: sudo apt-get update && sudo apt-get install -y default-mysql-client libjpeg62-turbo-dev libpng-dev zlib1g-dev
       - run: sudo docker-php-ext-configure gd --with-jpeg-dir=/usr/include/
@@ -27,7 +22,7 @@ jobs:
           key: php71-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: mysql -h 127.0.0.1 -u ubuntu -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
+      - run: mysql -h 127.0.0.1 -u root -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup test
       
@@ -176,7 +171,7 @@ workflows:
   version: 2
   unittest:
     jobs:
-      - "php-7.1 / mysql-5.7"
+      - "php-7.1 / mariadb-10"
 #      - "php-7.2 / mysql-5.7"
 #      - "php-7.3 / mysql-5.7"
 #      - "php-7.4 / mysql-8.0 / coverage / check"
