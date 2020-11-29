@@ -150,7 +150,7 @@ jobs:
       - run: curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee -a /etc/apt/sources.list
       - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y mssql-tools msodbcsql17 unixodbc unixodbc-dev odbcinst1debian2 libodbc1 php7.4-gd php7.4-intl
       - run: sudo pecl channel-update pecl.php.net && sudo pecl install sqlsrv && sudo pecl install pdo_sqlsrv
-      - run: sudo -E docker-php-ext-install sqlsrv
+      - run: sudo -E docker-php-ext-enable sqlsrv
       - checkout
       - restore_cache:
           keys:
