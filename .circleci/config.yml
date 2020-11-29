@@ -8,9 +8,15 @@ jobs:
   "php-7.1 / mysql-5.7":
     docker:
       - image: circleci/php:7.1
+      - image: circleci/mysql:5.7
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: aimeos
+          MYSQL_USER: aimeos
+          MYSQL_PASSWORD: aimeos
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev zlib1g-dev
-      - run: sudo docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+      - run: sudo apt-get update && sudo apt-get install -y libjpeg62-turbo-dev libpng-dev zlib1g-dev
+      - run: sudo docker-php-ext-configure gd --with-jpeg-dir=/usr/include/
       - run: sudo docker-php-ext-install -j$(nproc) gd zip pdo_mysql
       - checkout
       - restore_cache:
