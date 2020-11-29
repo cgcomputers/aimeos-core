@@ -46,7 +46,7 @@ jobs:
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup test
       
-  "php-7.3 / mysql-5.7":
+  "php-7.3 / mysql-5.7 / check":
     docker:
       - image: cimg/php:7.3
       - image: circleci/mysql:5.7
@@ -67,9 +67,9 @@ jobs:
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
-      - run: ./vendor/bin/phing setup test
+      - run: ./vendor/bin/phing setup test check
       
-  "php-7.4 / mysql-8.0":
+  "php-7.4 / mysql-8.0 / coverage":
     docker:
       - image: cimg/php:7.4
       - image: circleci/mysql:8.0
@@ -90,13 +90,34 @@ jobs:
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => '127.0.0.1', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
-      - run: ./vendor/bin/phing setup coverage check
+      - run: ./vendor/bin/phing setup coverage
       - run: ./vendor/bin/php-coveralls -vvv
-      
+
   "php-7.4 / pgsql-9.6":
     docker:
       - image: cimg/php:7.4
       - image: circleci/postgres:9.6-alpine
+        environment:
+          POSTGRES_USER: aimeos
+          POSTGRES_DB: aimeos
+    steps:
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-client php7.4-gd php7.4-intl php7.4-pgsql php7.4-xdebug
+      - checkout
+      - restore_cache:
+          keys:
+            - php74-{{ checksum "composer.json" }}
+      - run: composer update -n --prefer-dist
+      - save_cache:
+          key: php74-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'pgsql', 'host' => '127.0.0.1', 'port' => 5432, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array() ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
+      - run: ./vendor/bin/phing setup test
+
+  "php-7.4 / pgsql-13":
+    docker:
+      - image: cimg/php:7.4
+      - image: circleci/postgres:13-alpine
         environment:
           POSTGRES_USER: aimeos
           POSTGRES_DB: aimeos
@@ -121,6 +142,7 @@ workflows:
     jobs:
 #      - "php-7.1 / mysql-5.7"
 #      - "php-7.2 / mysql-5.7"
-#      - "php-7.3 / mysql-5.7"
-#      - "php-7.4 / mysql-8.0"
-      - "php-7.4 / pgsql-9.6"
+#      - "php-7.3 / mysql-5.7 / check"
+#      - "php-7.4 / mysql-8.0 / coverage"
+#      - "php-7.4 / pgsql-9.6"
+      - "php-7.4 / pgsql-13"
