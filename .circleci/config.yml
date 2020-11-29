@@ -141,10 +141,14 @@ jobs:
   "php-7.4 / mssql-2017":
     docker:
       - image: cimg/php:7.4
+      - image: mcr.microsoft.com/mssql/server:2017-latest
+        environment:
+          SA_PASSWORD: S3c0r3P4ss
+          ACCEPT_EULA: Y
     steps:
       - run: curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
       - run: curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee -a /etc/apt/sources.list
-      - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc unixodbc-dev odbcinst1debian2 libodbc1 php7.4-gd php7.4-intl
+      - run: sudo apt-get update && sudo ACCEPT_EULA=Y apt-get install -y mssql-tools msodbcsql17 unixodbc unixodbc-dev odbcinst1debian2 libodbc1 php7.4-gd php7.4-intl
       - run: sudo pecl channel-update pecl.php.net && sudo pecl install sqlsrv && sudo pecl install pdo_sqlsrv
       - checkout
       - restore_cache:
@@ -154,10 +158,8 @@ jobs:
       - save_cache:
           key: php74-{{ checksum "composer.json" }}
           paths: [./vendor]
-      - run: echo "CREATE DATABASE aimeos;" > sqlserver.sql
-      - run: sudo docker run --name=mssql-server -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=S3c0r3P4ss' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 1433 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mssql', 'host' => '127.0.0.1', 'port' => 1433, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'S3c0r3P4ss', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array() ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mssql', 'host' => '127.0.0.1', 'port' => 1433, 'database' => 'aimeos', 'username' => 'SA', 'password' => 'S3c0r3P4ss', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array() ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup coverage check
       - run: ./vendor/bin/php-coveralls -vvv
 
