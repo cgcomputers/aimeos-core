@@ -12,7 +12,7 @@ jobs:
       - run: sudo apt-get update && sudo apt install -y mysql-client libpng-dev
       - run: sudo docker-php-ext-install gd
       - checkout
-      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
+      - run: mysql -h 127.0.0.1 -u ubuntu -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
@@ -25,11 +25,14 @@ jobs:
   "php-7.2":
     docker:
       - image: cimg/php:7.2
+      - image: circleci/mysql:5.7
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: aimeos
+          MYSQL_USER: aimeos
+          MYSQL_PASSWORD: aimeos
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y mysql-client php7.2-gd php7.2-intl php7.2-mysql
       - checkout
-      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
-      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php72-{{ checksum "composer.json" }}
@@ -37,15 +40,21 @@ jobs:
       - save_cache:
           key: php72-{{ checksum "composer.json" }}
           paths: [./vendor]
+      - run: sudo apt-get update && sudo apt-get install -y mysql-client php7.2-gd php7.2-intl php7.2-mysql
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup test
   "php-7.3":
     docker:
       - image: cimg/php:7.3
+      - image: circleci/mysql:5.7
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: aimeos
+          MYSQL_USER: aimeos
+          MYSQL_PASSWORD: aimeos
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y mysql-client php7.3-gd php7.3-intl php7.3-mysql
       - checkout
-      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
-      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php73-{{ checksum "composer.json" }}
@@ -53,15 +62,21 @@ jobs:
       - save_cache:
           key: php73-{{ checksum "composer.json" }}
           paths: [./vendor]
+      - run: sudo apt-get update && sudo apt-get install -y mysql-client php7.3-gd php7.3-intl php7.3-mysql
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup test
   "php-7.4":
     docker:
       - image: cimg/php:7.4
+      - image: circleci/mysql:8.0
+        environment:
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: aimeos
+          MYSQL_USER: aimeos
+          MYSQL_PASSWORD: aimeos
     steps:
-      - run: sudo apt-get update && sudo apt-get install -y mysql-client php7.4-gd php7.4-intl php7.4-mysql php7.4-xdebug
       - checkout
-      - run: sudo mysql -e "CREATE DATABASE aimeos; GRANT ALL ON aimeos.* TO 'aimeos'@'localhost' IDENTIFIED BY 'aimeos'"
-      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - restore_cache:
           keys:
             - php74-{{ checksum "composer.json" }}
@@ -69,6 +84,9 @@ jobs:
       - save_cache:
           key: php74-{{ checksum "composer.json" }}
           paths: [./vendor]
+      - run: sudo apt-get update && sudo apt-get install -y mysql-client php7.4-gd php7.4-intl php7.4-mysql php7.4-xdebug
+      - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
+      - run: echo "<?php return array( 'db' => array( 'adapter' => 'mysql', 'host' => 'localhost', 'port' => 3306, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array( \"SET SESSIOn sort_buffer_size=2097144; SET NAMES 'utf8'; SET SESSION sql_mode='ANSI'\" ) ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
       - run: ./vendor/bin/phing setup coverage
       - run: ./vendor/bin/php-coveralls -o coveralls.json -x coverage.xml -vvv
 
