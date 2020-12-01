@@ -120,7 +120,7 @@ jobs:
 
   "php-7.4 / pgsql-13":
     docker:
-      - image: cimg/php:7.4
+      - image: aimeos/ci-php:7.4
       - image: circleci/postgres:13
         environment:
           POSTGRES_PASSWORD: aimeos
@@ -138,8 +138,7 @@ jobs:
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
       - run: echo "<?php return array( 'db' => array( 'adapter' => 'pgsql', 'host' => '127.0.0.1', 'port' => 5432, 'database' => 'aimeos', 'username' => 'aimeos', 'password' => 'aimeos', 'limit' => 2, 'opt-persistent' => false, 'stmt' => array() ), 'fs' => array( 'adapter' => 'Standard', 'basedir' => '.' ), 'mq' => array( 'adapter' => 'Standard', 'db' => 'db' ) );" > config/resource.php
-      - run: ./vendor/bin/phing setup coverage check
-      - run: ./vendor/bin/php-coveralls -vvv
+      - run: ./vendor/bin/phing setup
 
   "php-7.4 / mssql-2019":
     docker:
@@ -171,9 +170,9 @@ workflows:
   version: 2
   unittest:
     jobs:
-      - "php-7.1 / mariadb-10"
+#      - "php-7.1 / mariadb-10"
 #      - "php-7.2 / mysql-5.7"
 #      - "php-7.3 / mysql-5.7"
 #      - "php-7.4 / mysql-8.0 / coverage / check"
-#      - "php-7.4 / pgsql-13"
+      - "php-7.4 / pgsql-13"
 #      - "php-7.4 / mssql-2019"
